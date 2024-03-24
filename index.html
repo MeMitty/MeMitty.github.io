@@ -6,7 +6,7 @@
 </head>
 <body>
 
-<div id="financialPlot" style="width:100%;height:800px;"></div>
+<div id="financialPlot" style="width:100%;height:1000px;"></div>
 
 <script>
 fetch('breadthdata.csv')
@@ -115,8 +115,6 @@ fetch('breadthdata.csv')
 		
 		
 		
-		
-
         var layout = {
             title: '$TOTAL Market Breadth',
 			shapes: [
@@ -128,7 +126,7 @@ fetch('breadthdata.csv')
 					x0: 0,
 					y0: 0,
 					x1: 0.78,
-					y1: 1,
+					y1: 0.98,
 					opacity: 0.2,
 					line: {
 						color: 'black',
@@ -143,7 +141,7 @@ fetch('breadthdata.csv')
 					x0: 0.82,
 					y0: 0,
 					x1: 1,
-					y1: 1,
+					y1: 0.98,
 					opacity: 0.2,					
 					line: {
 						color: 'black',
@@ -195,13 +193,13 @@ fetch('breadthdata.csv')
             xaxis: {
                 domain: [0, 0.78],
                 title: 'Date',
-				//rangeslider: {visible: true}
+				rangeslider: {visible: true}
             },
             xaxis2: {
                 domain: [0.82, 1],
                 title: 'Date',
 				range: [the2024start, mostRecentDate],
-				//rangeslider: {visible: true}
+				rangeslider: {visible: true}
             },
 			
             yaxis: {
