@@ -6,69 +6,66 @@
 </head>
 <body>
 
-<div id="financialPlot" style="width:100%;height:1200px;"></div>
+<div id="financialPlot" style="width:100%; height:1200px;"></div>
 
 <script>
 fetch('breadthdata.csv')
 .then(response => response.text())
 .then(csvString => {
-    var rows = csvString.trim().split('\n');
-    var headers = rows.shift().split(',');
-
-    var parsedData = rows.map(row => {
-        var values = row.split(',').map(value => value.replace(/^"|"$/g, '').replace(/,/g, '')); // Remove quotes and commas
-        var entry = {};
+    const rows = csvString.trim().split('\n');
+    const headers = rows.shift().split(',');
+    const parsedData = rows.map(row => {
+        const values = row.split(',');
+        const entry = {};
         headers.forEach((header, index) => {
             entry[header] = values[index];
         });
         return entry;
     });
 
-    var dates = parsedData.map(row => row['Date']);
-    var closePrices = parsedData.map(row => parseFloat(row['close'])); // Ensure conversion to float
-    var indexMSI = parsedData.map(row => parseFloat(row['Index (MSI)'])); // Ensure negative numbers are included
-    var macd = parsedData.map(row => parseFloat(row['MACD'])); // Ensure proper parsing
+    const dates = parsedData.map(row => row['Date']);
+    const closePrices = parsedData.map(row => parseFloat(row['close']));
+    const indexMSI = parsedData.map(row => parseFloat(row['Index (MSI)']));
+    const macd = parsedData.map(row => parseFloat(row['MACD']));
 
-    var layout = {
+    const layout = {
         title: 'Financial Data Visualization',
         grid: {rows: 3, columns: 1, pattern: 'independent'},
-        xaxis: {title: 'Date'},
+        xaxis: {title: 'Date', tickangle: -45},
         yaxis: {title: 'Close Prices', type: 'log'},
-        xaxis2: {title: 'Date', anchor: 'y2'},
-        yaxis2: {title: 'Index (MSI)', autorange: true}, // Ensure autorange is true to include negative numbers
-        xaxis3: {title: 'Date', anchor: 'y3'},
+        xaxis2: {title: 'Date', anchor: 'y2', tickangle: -45},
+        yaxis2: {title: 'Index (MSI)', autorange: true},
+        xaxis3: {title: 'Date', anchor: 'y3', tickangle: -45},
         yaxis3: {title: 'MACD', autorange: true},
     };
 
-    var trace1 = {
-        x: dates,
-        y: closePrices,
-        type: 'scatter',
-        mode: 'lines',
-        name: 'Close Prices',
-        xaxis: 'x',
-        yaxis: 'y'
-    };
-
-    var trace2 = {
-        x: dates,
-        y: indexMSI,
-        type: 'bar',
-        name: 'Index (MSI)',
-        xaxis: 'x2',
-        yaxis: 'y2'
-    };
-
-    var trace3 = {
-        x: dates,
-        y: macd,
-        type: 'bar',
-        name: 'MACD',
-        xaxis: 'x3',
-        yaxis: 'y3'
-    };
-
-    Plotly.newPlot('financialPlot', [trace1, trace2, trace3], layout);
+    Plotly.newPlot('financialPlot', [
+        {
+            x: dates,
+            y: closePrices,
+            type: 'scatter',
+            mode: 'lines',
+            name: 'Close Prices',
+            xaxis: 'x',
+            yaxis: 'y'
+        },
+        {
+            x: dates,
+            y: indexMSI,
+            type: 'bar',
+            name: 'Index (MSI)',
+            xaxis: 'x2',
+            yaxis: 'y2'
+        },
+        {
+            x: dates,
+            y: macd,
+            type: 'bar',
+            name: 'MACD',
+            xaxis: 'x3',
+            yaxis: 'y3'
+        }
+    ], layout);
 })
 .catch(error => console.error('Error loading the CSV file:', error));
 </script>
