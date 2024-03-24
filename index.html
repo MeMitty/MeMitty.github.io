@@ -58,9 +58,9 @@ fetch('breadthdata.csv')
 			xaxis: {
 				domain: [0, 1],
 				title: 'Date',
-				tickmode: 'auto',
-				nticks: 20, // Adjust this value to reduce or increase the number of ticks
-				rangeslider: {visible: true} // Enable the range slider
+				tickformat: "%b '%y", // Optional: formats ticks to abbreviated month and last two digits of year (e.g., Jan '23)
+				dtick: "M1", // Set ticks at the start of every month
+				rangeslider: {visible: true}
 			},
 			yaxis: {
 				title: 'Close Prices',
@@ -73,7 +73,6 @@ fetch('breadthdata.csv')
 				title: 'Date',
 				tickmode: 'auto',
 				nticks: 20, // Adjust for the second graph as well
-				rangeslider: {visible: false} // Typically, a range slider is only needed on the first x-axis
 			},
 			yaxis2: {
 				title: 'Index (MSI) & MACD',
