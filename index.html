@@ -6,10 +6,10 @@
 </head>
 <body>
 
-<div id="financialPlot" style="width:100%; height:100%;"></div>
+<div id="financialPlot" style="width:100%;height:800px;"></div>
 
 <script>
-// Fetch the CSV data from the server (you'll need to replace 'your_data.csv' with the actual path or URL to your CSV file)
+// Assuming 'your_data.csv' is accessible at the specified path
 fetch('breadthdata.csv')
     .then(response => response.text())
     .then(csvString => {
@@ -28,43 +28,52 @@ fetch('breadthdata.csv')
         var closeTrace = {
             x: dates,
             y: closePrices,
+            xaxis: 'x',
+            yaxis: 'y',
             type: 'scatter',
             mode: 'lines',
-            name: 'Close Prices',
-            yaxis: 'y1'
+            name: 'Close Prices'
         };
 
         var indexMSITrace = {
             x: dates,
             y: indexMSI,
+            xaxis: 'x2',
+            yaxis: 'y2',
             type: 'bar',
             name: 'Index (MSI)',
-            marker: {color: 'blue'},
-            yaxis: 'y2'
+            marker: {color: 'blue'}
         };
 
         var macdTrace = {
             x: dates,
             y: macd,
+            xaxis: 'x2',
+            yaxis: 'y2',
             type: 'bar',
             name: 'MACD',
-            marker: {color: 'red'},
-            yaxis: 'y2'
+            marker: {color: 'red'}
         };
 
         var layout = {
             title: 'Financial Data Visualization',
-            xaxis: {domain: [0, 1]},
+            grid: {rows: 2, columns: 1, pattern: 'independent'},
+            xaxis: {
+                domain: [0, 1],
+                title: 'Date'
+            },
             yaxis: {
                 title: 'Close Prices (Log Scale)',
-                type: 'log',
-                domain: [0.5, 1] // Upper half for Close Prices
+                type: 'log'
+            },
+            xaxis2: {
+                domain: [0, 1],
+                anchor: 'y2',
+                title: 'Date'
             },
             yaxis2: {
                 title: 'Index (MSI) & MACD',
-                overlaying: 'y',
-                side: 'right',
-                domain: [0, 0.45] // Lower half for Index (MSI) & MACD
+                anchor: 'x2'
             },
             barmode: 'overlay'
         };
