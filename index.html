@@ -10,25 +10,12 @@
 
 <script>
 fetch('breadthdata.csv')
-.then(response => response.text())
-.then(csvString => {
-    var rows = csvString.split('\n');
-    var headers = rows.shift().split(',');
-
-    var parsedData = rows.map(row => {
-        var values = row.split(',');
-        var entry = {};
-        headers.forEach((header, index) => {
-            if (header.toLowerCase() === 'date') {
-                // Convert 'dd-mm-yyyy' to 'yyyy-mm-dd'
-                var dateParts = values[index].split('-');
-                entry[header] = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`;
-            } else {
-                entry[header] = values[index];
-            }
+    .then(response => response.text())
+    .then(csvString => {
+        var rows = csvString.split('\n');
+        var data = rows.map(function(row) {
+            return row.split(',');
         });
-        return entry;
-    });
         
         var dates = data.slice(1).map(row => row[0]);
         var closePrices = data.slice(1).map(row => Number(row[1].replace(/,/g, '')));
@@ -67,12 +54,13 @@ fetch('breadthdata.csv')
 
 		var layout = {
 			title: 'Financial Data Visualization',
-			// Adjust your axes configurations as needed
+			grid: {rows: 2, columns: 1, pattern: 'independent', roworder: 'top to bottom'},
 			xaxis: {
+				domain: [0, 1],
 				title: 'Date',
-				tickformat: "%d-%m-%Y", // Adjust if you want to display dates in a specific format
-				dtick: "M1", // Month intervals should work after conversion
-				rangeslider: {visible: true}
+				tickmode: 'auto',
+				nticks: 30, // Adjust this value to reduce or increase the number of ticks
+				rangeslider: {visible: true} // Enable the range slider
 			},
 			yaxis: {
 				title: 'Close Prices',
@@ -84,14 +72,15 @@ fetch('breadthdata.csv')
 				anchor: 'y2',
 				title: 'Date',
 				tickmode: 'auto',
-				nticks: 20, // Adjust for the second graph as well
+				nticks: 30, // Adjust for the second graph as well
+				rangeslider: {visible: false} // Typically, a range slider is only needed on the first x-axis
 			},
 			yaxis2: {
 				title: 'Index (MSI) & MACD',
 				anchor: 'x2'
 			},
 			barmode: 'overlay'
-};
+		};
 
         Plotly.newPlot('financialPlot', [closeTrace, indexMSITrace, macdTrace], layout);
     })
