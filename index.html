@@ -1,62 +1,77 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Histogram from CSV</title>
+    <title>Financial Data Visualization</title>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 </head>
 <body>
 
-<div id="histogram"></div>
+<div id="financialPlot" style="width:100%; height:100%;"></div>
 
 <script>
-// Function to parse CSV data
-function parseCSVData(allText) {
-    var allTextLines = allText.split(/\r\n|\n/);
-    var headers = allTextLines[0].split(',');
-    var lines = [];
-
-    for (var i=1; i<allTextLines.length; i++) {
-        var data = allTextLines[i].split(',');
-        if (data.length == headers.length) {
-            var tarr = {};
-            for (var j=0; j<headers.length; j++) {
-                tarr[headers[j]] = data[j];
-            }
-            lines.push(tarr);
-        }
-    }
-    return lines;
-}
-
-// Read CSV file and plot
+// Fetch the CSV data from the server (you'll need to replace 'your_data.csv' with the actual path or URL to your CSV file)
 fetch('breadthdata.csv')
-.then(response => response.text())
-.then(data => {
-    var parsedData = parseCSVData(data);
+    .then(response => response.text())
+    .then(csvString => {
+        var rows = csvString.split('\n');
+        var data = rows.map(function(row) {
+            return row.split(',');
+        });
+        
+        // Extracting data
+        var dates = data.slice(1).map(row => row[0]);
+        var closePrices = data.slice(1).map(row => Number(row[1].replace(/,/g, ''))); // Remove commas and convert to Number
+        var indexMSI = data.slice(1).map(row => row[2] ? Number(row[2]) : null);
+        var macd = data.slice(1).map(row => row[3] ? Number(row[3]) : null);
+        
+        // Creating traces
+        var closeTrace = {
+            x: dates,
+            y: closePrices,
+            type: 'scatter',
+            mode: 'lines',
+            name: 'Close Prices',
+            yaxis: 'y1'
+        };
 
-    var dateData = parsedData.map(row => row['Date']);
-    var btcPriceData = parsedData.map(row => parseInt(row['close']));
-	var breathData = parsedData.map(row => parseInt(row['Index (MSI)']))
-	var MACDbreathData = parsedData.map(row => parseInt(row['MACD']))
+        var indexMSITrace = {
+            x: dates,
+            y: indexMSI,
+            type: 'bar',
+            name: 'Index (MSI)',
+            marker: {color: 'blue'},
+            yaxis: 'y2'
+        };
 
-    var trace = {
-        x: dateData,
-        y: btcPriceData,
-        type: 'scatter'
-    };
+        var macdTrace = {
+            x: dates,
+            y: macd,
+            type: 'bar',
+            name: 'MACD',
+            marker: {color: 'red'},
+            yaxis: 'y2'
+        };
 
-    var layout = {
-        title: 'Histogram from CSV Data',
-        xaxis: {title: 'Date'},
-        yaxis: {
-				title: 'Histogram Data',
-				type: 'log'
-				}
-    };
+        var layout = {
+            title: 'Financial Data Visualization',
+            xaxis: {domain: [0, 1]},
+            yaxis: {
+                title: 'Close Prices (Log Scale)',
+                type: 'log',
+                domain: [0.5, 1] // Upper half for Close Prices
+            },
+            yaxis2: {
+                title: 'Index (MSI) & MACD',
+                overlaying: 'y',
+                side: 'right',
+                domain: [0, 0.45] // Lower half for Index (MSI) & MACD
+            },
+            barmode: 'overlay'
+        };
 
-    Plotly.newPlot('histogram', [trace], layout);
-})
-.catch(error => console.log('Error:', error));
+        Plotly.newPlot('financialPlot', [closeTrace, indexMSITrace, macdTrace], layout);
+    })
+    .catch(error => console.error('Error loading the CSV file:', error));
 </script>
 
 </body>
