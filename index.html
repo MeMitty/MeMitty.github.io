@@ -12,66 +12,79 @@
 fetch('breadthdata.csv')
     .then(response => response.text())
     .then(csvString => {
-        var rows = csvString.split('\n');
-        var data = rows.map(function(row) {
-            return row.split(',');
-        });
+        // Split CSV into rows.
+        var rows = csvString.trim().split('\n');
         
-        var dates = parsedData.map(row => row['Date']);
-        var closePrices = parsedData.map(row => parseInt(row['Close']));
-        var indexMSI = parsedData.map(row => parseInt(row['Index (MSI)']));
-        var macd = parsedData.map(row => parseInt(row['MACD']));
+        // Extract header row.
+        var headers = rows.shift().split(',');
 
+        // Map rows to objects.
+        var parsedData = rows.map(row => {
+            var values = row.split(',');
+            var entry = {};
+            headers.forEach((header, index) => {
+                entry[header] = values[index];
+            });
+            return entry;
+        });
+
+        // Extract columns.
+        var dates = parsedData.map(row => row['Date']);
+        var closePrices = parsedData.map(row => parseFloat(row['close'].replace(/,/g, '')));
+        var indexMSI = parsedData.map(row => row['Index (MSI)'] ? parseFloat(row['Index (MSI)']) : null);
+        var macd = parsedData.map(row => row['MACD'] ? parseFloat(row['MACD']) : null);
+
+        // Define traces.
         var closeTrace = {
             x: dates,
             y: closePrices,
-            xaxis: 'x',
-            yaxis: 'y',
             type: 'scatter',
             mode: 'lines',
-            name: 'Close Prices'
+            name: 'Close Prices',
+            xaxis: 'x',
+            yaxis: 'y1'
         };
 
         var indexMSITrace = {
             x: dates,
             y: indexMSI,
-            xaxis: 'x2',
-            yaxis: 'y2',
             type: 'bar',
             name: 'Index (MSI)',
-            marker: {color: 'blue'}
+            marker: {color: 'blue'},
+            xaxis: 'x',
+            yaxis: 'y2'
         };
 
         var macdTrace = {
             x: dates,
             y: macd,
-            xaxis: 'x2',
-            yaxis: 'y2',
             type: 'bar',
             name: 'MACD',
-            marker: {color: 'red'}
+            marker: {color: 'red'},
+            xaxis: 'x',
+            yaxis: 'y2'
         };
 
+        // Define layout with separate y-axes.
         var layout = {
             title: 'Financial Data Visualization',
-            grid: {rows: 2, columns: 1, pattern: 'independent', roworder: 'top to bottom'},
-            xaxis: {
-                domain: [0, 1],
-                title: 'Date'
-            },
+            xaxis: {title: 'Date'},
             yaxis: {
                 title: 'Close Prices',
                 type: 'log',
-                autorange: true
-            },
-            xaxis2: {
-                domain: [0, 1],
-                anchor: 'y2',
-                title: 'Date'
+                side: 'left',
+                overlaying: 'y2'
             },
             yaxis2: {
                 title: 'Index (MSI) & MACD',
-                anchor: 'x2'
+                side: 'right',
+                position: 0.85
+            },
+            grid: {
+                rows: 2,
+                columns: 1,
+                subplots: [['xy'], ['xy2']],
+                roworder: 'top to bottom'
             },
             barmode: 'overlay'
         };
