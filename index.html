@@ -6,76 +6,79 @@
 </head>
 <body>
 
-<div id="financialPlot" style="width:100%; height:1200px;"></div>
+<div id="financialPlot" style="width:100%;height:800px;"></div>
 
 <script>
-// Function to parse CSV data
-function parseCSV(csvString) {
-    const rows = csvString.trim().split('\n');
-    const headers = rows.shift().split(',');
-    return rows.map(row => {
-        const values = row.split(',');
-        const entry = {};
-        headers.forEach((header, index) => {
-            const cleanValue = values[index].trim(); // Trim whitespace
-            entry[header] = !isNaN(cleanValue) ? parseFloat(cleanValue) : cleanValue; // Convert to float if numeric
-        });
-        return entry;
-    });
-}
-
 fetch('breadthdata.csv')
-.then(response => response.text())
-.then(csvString => {
-    const parsedData = parseCSV(csvString);
+    .then(response => response.text())
+    .then(csvString => {
+        var rows = csvString.split('\n');
+        var data = rows.map(function(row) {
+            return row.split(',');
+        });
+        
+        var dates = data.slice(1).map(row => row[0]);
+        var closePrices = data.slice(1).map(row => Number(row[1].replace(/,/g, '')));
+        var indexMSI = data.slice(1).map(row => row[2] ? Number(row[2]) : null);
+        var macd = data.slice(1).map(row => row[3] ? Number(row[3]) : null);
 
-    const dates = parsedData.map(row => row['Date']);
-    const closePrices = parsedData.map(row => row['close']); // Assuming 'close' is the correct column name
-    const indexMSI = parsedData.map(row => row['Index (MSI)']); // Assuming 'Index (MSI)' is the correct column name
-    const macd = parsedData.map(row => row['MACD']); // Assuming 'MACD' is the correct column name
-
-    const layout = {
-        title: 'Financial Data Visualization',
-        grid: {rows: 3, columns: 1, pattern: 'independent'},
-        xaxis: {title: 'Date', tickangle: -45},
-        yaxis: {title: 'Close Prices', type: 'log'},
-        xaxis2: {title: 'Date', anchor: 'y2', tickangle: -45},
-        yaxis2: {title: 'Index (MSI)', autorange: true},
-        xaxis3: {title: 'Date', anchor: 'y3', tickangle: -45},
-        yaxis3: {title: 'MACD', autorange: true},
-    };
-
-    const traces = [
-        {
+        var closeTrace = {
             x: dates,
             y: closePrices,
+            xaxis: 'x',
+            yaxis: 'y',
             type: 'scatter',
             mode: 'lines',
-            name: 'Close Prices',
-            xaxis: 'x',
-            yaxis: 'y'
-        },
-        {
+            name: 'Close Prices'
+        };
+
+        var indexMSITrace = {
             x: dates,
             y: indexMSI,
+            xaxis: 'x2',
+            yaxis: 'y2',
             type: 'bar',
             name: 'Index (MSI)',
-            xaxis: 'x2',
-            yaxis: 'y2'
-        },
-        {
+            marker: {color: 'blue'}
+        };
+
+        var macdTrace = {
             x: dates,
             y: macd,
+            xaxis: 'x2',
+            yaxis: 'y2',
             type: 'bar',
             name: 'MACD',
-            xaxis: 'x3',
-            yaxis: 'y3'
-        }
-    ];
+            marker: {color: 'red'}
+        };
 
-    Plotly.newPlot('financialPlot', traces, layout);
-})
-.catch(error => console.error('Error loading the CSV file:', error));
+        var layout = {
+            title: 'Financial Data Visualization',
+            grid: {rows: 2, columns: 1, pattern: 'independent', roworder: 'top to bottom'},
+            xaxis: {
+                domain: [0, 1],
+                title: 'Date'
+            },
+            yaxis: {
+                title: 'Close Prices',
+                type: 'log',
+                autorange: true
+            },
+            xaxis2: {
+                domain: [0, 1],
+                anchor: 'y2',
+                title: 'Date'
+            },
+            yaxis2: {
+                title: 'Index (MSI) & MACD',
+                anchor: 'x2'
+            },
+            barmode: 'overlay'
+        };
+
+        Plotly.newPlot('financialPlot', [closeTrace, indexMSITrace, macdTrace], layout);
+    })
+    .catch(error => console.error('Error loading the CSV file:', error));
 </script>
 
 </body>
