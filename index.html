@@ -17,10 +17,10 @@ fetch('breadthdata.csv')
             return row.split(',');
         });
         
-        var dates = data.slice(1).map(row => row[0]);
-        var closePrices = data.slice(1).map(row => Number(row[1].replace(/,/g, '')));
-        var indexMSI = data.slice(1).map(row => row[2] ? Number(row[2]) : null);
-        var macd = data.slice(1).map(row => row[3] ? Number(row[3]) : null);
+        var dates = parsedData.map(row => row['Date']);
+        var closePrices = parsedData.map(row => parseInt(row['Close']));
+        var indexMSI = parsedData.map(row => parseInt(row['Index (MSI)']));
+        var macd = parsedData.map(row => parseInt(row['MACD']));
 
         var closeTrace = {
             x: dates,
