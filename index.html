@@ -6,7 +6,7 @@
 </head>
 <body>
 
-<div id="financialPlot" style="width:100%;height:800px;"></div>
+<div id="financialPlot" style="width:100%;height:50%;"></div>
 
 <script>
 fetch('breadthdata.csv')
@@ -60,7 +60,6 @@ fetch('breadthdata.csv')
 				title: 'Date',
 				tickmode: 'auto',
 				nticks: 30, // Adjust this value to reduce or increase the number of ticks
-				rangeslider: {visible: true} // Enable the range slider
 			},
 			yaxis: {
 				title: 'Close Prices',
@@ -73,7 +72,6 @@ fetch('breadthdata.csv')
 				title: 'Date',
 				tickmode: 'auto',
 				nticks: 30, // Adjust for the second graph as well
-				rangeslider: {visible: false} // Typically, a range slider is only needed on the first x-axis
 			},
 			yaxis2: {
 				title: 'Index (MSI) & MACD',
