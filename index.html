@@ -46,7 +46,10 @@ fetch('INDEX_BTCUSD_1D.csv')
     var layout = {
         title: 'Histogram from CSV Data',
         xaxis: {title: 'Date'},
-        yaxis: {title: 'Histogram Data'}
+        yaxis: {
+				title: 'Histogram Data',
+				type: 'log'
+				}
     };
 
     Plotly.newPlot('histogram', [trace], layout);
