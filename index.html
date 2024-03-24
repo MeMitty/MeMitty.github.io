@@ -29,17 +29,19 @@ function parseCSVData(allText) {
 }
 
 // Read CSV file and plot
-fetch('INDEX_BTCUSD_1D.csv')
+fetch('breadthdata.csv')
 .then(response => response.text())
 .then(data => {
     var parsedData = parseCSVData(data);
 
-    var dates = parsedData.map(row => row['time']);
-    var histogramData = parsedData.map(row => parseInt(row['close']));
+    var dateData = parsedData.map(row => row['Date']);
+    var btcPriceData = parsedData.map(row => parseInt(row['close']));
+	var breathData = parsedData.map(row => parseInt(row['Index (MSI)']))
+	var MACDbreathData = parsedData.map(row => parseInt(row['MACD']))
 
     var trace = {
-        x: dates,
-        y: histogramData,
+        x: dateData,
+        y: btcPriceData,
         type: 'scatter'
     };
 
