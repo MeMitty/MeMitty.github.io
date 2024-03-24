@@ -20,7 +20,7 @@ fetch('breadthdata.csv')
         
         // Extracting data
         var dates = data.slice(1).map(row => row[0]);
-        var closePrices = data.slice(1).map(row => Number(row[1].replace(/,/g, ''))); // Remove commas and convert to Number
+        var closePrices = data.slice(1).map(row => Number(row[1]) : null); // Remove commas and convert to Number
         var indexMSI = data.slice(1).map(row => row[2] ? Number(row[2]) : null);
         var macd = data.slice(1).map(row => row[3] ? Number(row[3]) : null);
         
