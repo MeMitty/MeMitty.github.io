@@ -9,7 +9,6 @@
 <div id="financialPlot" style="width:100%;height:800px;"></div>
 
 <script>
-// Assuming 'your_data.csv' is accessible at the specified path
 fetch('breadthdata.csv')
     .then(response => response.text())
     .then(csvString => {
@@ -18,13 +17,11 @@ fetch('breadthdata.csv')
             return row.split(',');
         });
         
-        // Extracting data
         var dates = data.slice(1).map(row => row[0]);
-        var closePrices = data.slice(1).map(row => Number(row[1]) : null); // Remove commas and convert to Number
+        var closePrices = data.slice(1).map(row => Number(row[1].replace(/,/g, '')));
         var indexMSI = data.slice(1).map(row => row[2] ? Number(row[2]) : null);
         var macd = data.slice(1).map(row => row[3] ? Number(row[3]) : null);
-        
-        // Creating traces
+
         var closeTrace = {
             x: dates,
             y: closePrices,
@@ -57,14 +54,15 @@ fetch('breadthdata.csv')
 
         var layout = {
             title: 'Financial Data Visualization',
-            grid: {rows: 2, columns: 1, pattern: 'independent'},
+            grid: {rows: 2, columns: 1, pattern: 'independent', roworder: 'top to bottom'},
             xaxis: {
                 domain: [0, 1],
                 title: 'Date'
             },
             yaxis: {
-                title: 'Close Prices (Log Scale)',
-                type: 'log'
+                title: 'Close Prices',
+                type: 'log',
+                autorange: true
             },
             xaxis2: {
                 domain: [0, 1],
