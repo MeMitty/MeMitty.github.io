@@ -1,25 +1,57 @@
 <!DOCTYPE html>
 <html>
-<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<head>
+    <title>Histogram from CSV</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
 <body>
 
-<div id="myPlot" style="width:100%;max-width:700px"></div>
+<div id="histogram"></div>
 
 <script>
-const xArray = ["Italy", "France", "Spain", "USA", "Argentina"];
-const yArray = [55, 49, 44, 24, 15];
+// Function to parse CSV data
+function parseCSVData(allText) {
+    var allTextLines = allText.split(/\r\n|\n/);
+    var headers = allTextLines[0].split(',');
+    var lines = [];
 
-const data = [{
-  x:xArray,
-  y:yArray,
-  type:"bar",
-  orientation:"v",
-  marker: {color:"rgba(0,0,255,0.6)"}
-}];
+    for (var i=1; i<allTextLines.length; i++) {
+        var data = allTextLines[i].split(',');
+        if (data.length == headers.length) {
+            var tarr = {};
+            for (var j=0; j<headers.length; j++) {
+                tarr[headers[j]] = data[j];
+            }
+            lines.push(tarr);
+        }
+    }
+    return lines;
+}
 
-const layout = {title:"World Wide Wine Production"};
+// Read CSV file and plot
+fetch('INDEX_BTCUSD_1D.csv')
+.then(response => response.text())
+.then(data => {
+    var parsedData = parseCSVData(data);
 
-Plotly.newPlot("myPlot", data, layout);
+    var dates = parsedData.map(row => row['time']);
+    var histogramData = parsedData.map(row => parseInt(row['close']));
+
+    var trace = {
+        x: dates,
+        y: histogramData,
+        type: 'bar'
+    };
+
+    var layout = {
+        title: 'Histogram from CSV Data',
+        xaxis: {title: 'Date'},
+        yaxis: {title: 'Histogram Data'}
+    };
+
+    Plotly.newPlot('histogram', [trace], layout);
+})
+.catch(error => console.log('Error:', error));
 </script>
 
 </body>
