@@ -54,13 +54,12 @@ fetch('breadthdata.csv')
 
 		var layout = {
 			title: 'Financial Data Visualization',
-			//grid: {rows: 2, columns: 1, pattern: 'independent', roworder: 'top to bottom'},
+			grid: {rows: 2, columns: 1, pattern: 'independent', roworder: 'top to bottom'},
 			xaxis: {
 				domain: [0, 1],
 				title: 'Date',
-				//tickmode: 'auto',
-				//nticks: 30, // Adjust this value to reduce or increase the number of ticks
-				type: 'date'
+				tickmode: 'auto',
+				nticks: 30, // Adjust this value to reduce or increase the number of ticks
 			},
 			yaxis: {
 				title: 'Close Prices',
