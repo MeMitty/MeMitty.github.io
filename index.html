@@ -12,15 +12,11 @@
 fetch('breadthdata.csv')
     .then(response => response.text())
     .then(csvString => {
-        // Split CSV into rows.
         var rows = csvString.trim().split('\n');
-        
-        // Extract header row.
         var headers = rows.shift().split(',');
 
-        // Map rows to objects.
         var parsedData = rows.map(row => {
-            var values = row.split(',');
+            var values = row.split(',').map(value => value.replace(/^"|"$/g, '')); // Remove quotes from values
             var entry = {};
             headers.forEach((header, index) => {
                 entry[header] = values[index];
@@ -28,13 +24,11 @@ fetch('breadthdata.csv')
             return entry;
         });
 
-        // Extract columns.
         var dates = parsedData.map(row => row['Date']);
-        var closePrices = parsedData.map(row => parseFloat(row['close'].replace(/,/g, '')));
-        var indexMSI = parsedData.map(row => row['Index (MSI)'] ? parseFloat(row['Index (MSI)']) : null);
-        var macd = parsedData.map(row => row['MACD'] ? parseFloat(row['MACD']) : null);
+        var closePrices = parsedData.map(row => parseFloat(row['close'].replace(/,/g, ''))); // Convert string to float and remove commas
+        var indexMSI = parsedData.map(row => row['Index (MSI)'] ? parseFloat(row['Index (MSI)'].replace(/,/g, '')) : null);
+        var macd = parsedData.map(row => row['MACD'] ? parseFloat(row['MACD'].replace(/,/g, '')) : null);
 
-        // Define traces.
         var closeTrace = {
             x: dates,
             y: closePrices,
@@ -65,7 +59,6 @@ fetch('breadthdata.csv')
             yaxis: 'y2'
         };
 
-        // Define layout with separate y-axes.
         var layout = {
             title: 'Financial Data Visualization',
             xaxis: {title: 'Date'},
