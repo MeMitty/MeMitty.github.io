@@ -10,12 +10,25 @@
 
 <script>
 fetch('breadthdata.csv')
-    .then(response => response.text())
-    .then(csvString => {
-        var rows = csvString.split('\n');
-        var data = rows.map(function(row) {
-            return row.split(',');
+.then(response => response.text())
+.then(csvString => {
+    var rows = csvString.split('\n');
+    var headers = rows.shift().split(',');
+
+    var parsedData = rows.map(row => {
+        var values = row.split(',');
+        var entry = {};
+        headers.forEach((header, index) => {
+            if (header.toLowerCase() === 'date') {
+                // Convert 'dd-mm-yyyy' to 'yyyy-mm-dd'
+                var dateParts = values[index].split('-');
+                entry[header] = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`;
+            } else {
+                entry[header] = values[index];
+            }
         });
+        return entry;
+    });
         
         var dates = data.slice(1).map(row => row[0]);
         var closePrices = data.slice(1).map(row => Number(row[1].replace(/,/g, '')));
@@ -54,12 +67,12 @@ fetch('breadthdata.csv')
 
 		var layout = {
 			title: 'Financial Data Visualization',
-			grid: {rows: 2, columns: 1, pattern: 'independent', roworder: 'top to bottom'},
+			// Adjust your axes configurations as needed
 			xaxis: {
-				domain: [0, 1],
 				title: 'Date',
-				tickformat: "%b '%y", // Optional: formats ticks to abbreviated month and last two digits of year (e.g., Jan '23)
-				dtick: "M1", // Set ticks at the start of every month
+				tickformat: "%d-%m-%Y", // Adjust if you want to display dates in a specific format
+				dtick: "M1", // Month intervals should work after conversion
+				rangeslider: {visible: true}
 			},
 			yaxis: {
 				title: 'Close Prices',
