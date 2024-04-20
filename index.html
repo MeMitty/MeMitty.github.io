@@ -25,14 +25,17 @@ fetch('breadthdata.csv')
         });
 		
 		function convertDateToISO(dateString) {
-			var parts = dateString.split('/');
-			return `${parts[2]}-${parts[1]}-${parts[0]}`; // Reformat to ISO (yyyy-mm-dd)
+			var parts = dateString.split('-');
+			var day = parts[0].length < 2 ? '0' + parts[0] : parts[0];
+			var month = parts[1].length < 2 ? '0' + parts[1] : parts[1];
+			var year = parts[2];
+			return `${year}-${month}-${day}`; // Reformat to ISO (yyyy-mm-dd)
 		}
 
         
         var dates = data.slice(1).map(row => convertDateToISO(row[0]));
 		var mostRecentDate = dates[dates.length - 1];
-		var the2024start = '2024-01-01'
+		var the2024start = '2024/01/01'
 		
 
         var closePrices = data.slice(1).map(row => Number(row[1].replace(/,/g, '')));
