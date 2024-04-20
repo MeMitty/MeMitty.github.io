@@ -19,31 +19,25 @@
 fetch('breadthdata.csv')
     .then(response => response.text())
     .then(csvString => {
-        var rows = csvString.split('\n');
-        var data = rows.map(function(row) {
-            return row.split(',');
+        // Normalize newlines, split into rows
+        var rows = csvString.trim().split('\n');
+
+        // Remove headers if necessary, and map rows to columns
+        var headers = rows.shift().split(','); // Optionally process headers if needed
+        var data = rows.map(row => {
+            // Split row while ignoring commas inside quotes
+            return row.match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g).map(field =>
+                field.replace(/^"|"$/g, '').replace(/,/g, '')
+            );
         });
 		
-//		function convertDateToISO(dateString) {
-//			var parts = dateString.split('-');
-//			var day = parts[0].length < 2 ? '0' + parts[0] : parts[0];
-//			var month = parts[1].length < 2 ? '0' + parts[1] : parts[1];
-//			var year = parts[2];
-//			return `${year}-${month}-${day}`; // Reformat to ISO (yyyy-mm-dd)
-//		}
-
-        
-        //var dates = data.slice(1).map(row => convertDateToISO(row[0]));
-		
-		var dates = data.slice(1).map(row => row[0]); // Directly use the date
+		// Extract and parse each column
+        var dates = data.map(row => row[0]);
+        var closePrices = data.map(row => parseFloat(row[1]));
+        var indexMSI = data.map(row => parseFloat(row[2]));
+        var macd = data.map(row => parseFloat(row[3]));
 		var mostRecentDate = dates[dates.length - 1];
 		var the2024start = '2024-01-01'
-		
-
-        var closePrices = data.slice(1).map(row => Number(row[1]));
-        var indexMSI = data.slice(1).map(row => row[2] ? Number(row[2]) : null);
-        var macd = data.slice(1).map(row => row[3] ? Number(row[3]) : null);
-
 
         // Trace for BTC Price
         var closeTrace = {
