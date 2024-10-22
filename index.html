@@ -34,7 +34,7 @@ fetch('breadthdata.csv')
 		// Extract and parse each column
         var dates = data.map(row => row[0]);
         var closePrices = data.map(row => parseFloat(row[1]));
-        var indexMSI = data.map(row => parseFloat(row[2]));
+        var indexMSI = data.map(row => parseFloat(row[2]) + 30);
         var macd = data.map(row => parseFloat(row[3]));
 		var mostRecentDate = dates[dates.length - 1];
 		var the2024start = '2024-01-01'
@@ -216,7 +216,7 @@ fetch('breadthdata.csv')
                 //title: 'Index (MSI) & MACD',
                 overlaying: 'y',
                 side: 'right', // Position on the right
-				range: [-250, 250]
+				range: [-300, 300]
             },
 			
 			
@@ -230,11 +230,212 @@ fetch('breadthdata.csv')
 				side: 'right',
 				anchor: 'x2',
                 overlaying: 'y',
-				range: [-250, 250]
+				range: [-300, 300]
 			},
         };
 
         Plotly.newPlot('financialPlot', [closeTrace, indexMSITrace, macdTrace, closeTrace2, indexMSITrace2, macdTrace2], layout);
+    })
+    .catch(error => console.error('Error loading the CSV file:', error));
+</script>
+
+
+
+<div id="financialPlot2" style="width:100%;height:1000px;"></div>
+<script>
+fetch('breadthdata.csv')
+    .then(response => response.text())
+    .then(csvString => {
+        // Normalize newlines, split into rows
+        var rows = csvString.trim().split('\n');
+
+        // Remove headers if necessary, and map rows to columns
+        var headers = rows.shift().split(','); // Optionally process headers if needed
+        var data = rows.map(row => {
+            // Split row while ignoring commas inside quotes
+            return row.match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g).map(field =>
+                field.replace(/^"|"$/g, '').replace(/,/g, '')
+            );
+        });
+		
+		// Extract and parse each column
+        var dates = data.map(row => row[0]);
+        var closePrices = data.map(row => parseFloat(row[1]));
+        var indexOSC = data.map(row => parseFloat(row[4]));
+		var mostRecentDate = dates[dates.length - 1];
+		var the2024start = '2024-01-01'
+
+        // Trace for BTC Price
+        var closeTrace = {
+            x: dates,
+            y: closePrices,
+            type: 'scatter',
+            mode: 'lines',
+			opacity: 0.8,
+            name: 'BTC Price',
+			marker: {color: 'black'},
+			xaxis: 'x',
+            yaxis: 'y' // Use the left y-axis
+			//opacity: 0.5,
+        };
+
+        // Trace for Index (MSI)
+        var indexOSCTrace = {
+            x: dates,
+            y: indexOSC,
+            type: 'bar',
+			opacity: 0.5,
+            name: 'Oscillator (OSC)',
+            marker: {color: 'green'},
+			xaxis: 'x',
+            yaxis: 'y2' // Use the right y-axis
+        };
+		
+		
+		
+		
+		
+		// Trace for BTC Price
+        var closeTrace2 = {
+            x: dates,
+            y: closePrices,
+            type: 'scatter',
+            mode: 'lines',
+			opacity: 0.8,
+            name: 'BTC Price',
+			marker: {color: 'black'},
+			xaxis: 'x2',
+            yaxis: 'y' // Use the left y-axis
+			//opacity: 0.5,
+        };
+
+        // Trace for Index (MSI)
+        var indexOSCTrace2 = {
+            x: dates,
+            y: indexOSC,
+            type: 'bar',
+			opacity: 0.5,
+            name: 'Oscillator (OSC)',
+            marker: {color: 'green'},
+			xaxis: 'x2',
+            yaxis: 'y4' // Use the right y-axis
+        };
+		
+		
+		
+        var layout = {
+            title: '$TOTAL Market Breadth',
+			shapes: [
+				// Border around the first subplot
+				{
+					type: 'rect',
+					xref: 'paper',
+					yref: 'paper',
+					x0: 0,
+					y0: 0,
+					x1: 0.78,
+					y1: 0.98,
+					opacity: 0.2,
+					line: {
+						color: 'black',
+						width: 2,
+					},
+				},
+				// Border around the second subplot
+				{
+					type: 'rect',
+					xref: 'paper',
+					yref: 'paper',
+					x0: 0.82,
+					y0: 0,
+					x1: 1,
+					y1: 0.98,
+					opacity: 0.2,					
+					line: {
+						color: 'black',
+						width: 2,
+					},
+				},
+			],
+			annotations: [
+				{
+					text: 'Crypto (TOTAL) McClellan Summation Oscillator', // Text for the first subplot's title
+					font: {
+						size: 16,
+						color: 'black',
+					},
+					showarrow: false,
+					align: 'center',
+					x: 0.25, // Adjust this to position your title correctly on the x-axis
+					y: 1, // Adjust this to position your title correctly on the y-axis
+					xref: 'paper',
+					yref: 'paper',
+					xanchor: 'center',
+					yanchor: 'bottom',
+				},
+				{
+					text: '2024 - Present', // Text for the second subplot's title
+					font: {
+						size: 16,
+						color: 'black',
+					},
+					showarrow: false,
+					align: 'center',
+					x: 0.9, // Adjust this to position your title correctly on the x-axis
+					y: 1, // Adjust this to position your title correctly on the y-axis
+					xref: 'paper',
+					yref: 'paper',
+					xanchor: 'center',
+					yanchor: 'bottom',
+				}
+			],
+	
+			legend: {
+				title: { text: ''},
+				orientation: 'h', // Horizontal layout of legend items
+				x: 0.5, // Center the legend horizontally
+				y: 1.025, // Position the legend just below the title
+				xanchor: 'center', // Anchor the legend at its center
+				yanchor: 'bottom' // Anchor the legend from its bottom edge
+			},
+            xaxis: {
+                domain: [0, 0.78],
+                title: 'Date',
+				rangeslider: {visible: true}
+            },
+            xaxis2: {
+                domain: [0.82, 1],
+                title: 'Date',
+				range: [the2024start, mostRecentDate],
+				rangeslider: {visible: true}
+            },
+			
+            yaxis: {
+                title: 'BTC Price',
+                type: 'log',
+            },
+            yaxis2: {
+                overlaying: 'y',
+                side: 'right', // Position on the right
+				range: [-30, 30]
+            },
+			
+			
+			
+            yaxis3: {
+                title: 'BTC Price',
+                type: 'log',
+            },
+            yaxis4: {
+                title: 'Oscillator (OSC)',
+				side: 'right',
+				anchor: 'x2',
+                overlaying: 'y',
+				range: [-30, 30]
+			},
+        };
+
+        Plotly.newPlot('financialPlot2', [closeTrace, indexOSCTrace, closeTrace2, indexOSCTrace2], layout);
     })
     .catch(error => console.error('Error loading the CSV file:', error));
 </script>
