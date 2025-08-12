@@ -16,7 +16,7 @@
 
 <div id="financialPlot" style="width:100%;height:1000px;"></div>
 <script>
-fetch('breadthdata.csv')
+fetch(`breadthdata.csv?v=${Date.now()}`, { cache: 'no-store' })
     .then(response => response.text())
     .then(csvString => {
         // Normalize newlines, split into rows
@@ -243,7 +243,7 @@ fetch('breadthdata.csv')
 
 <div id="financialPlot2" style="width:100%;height:1000px;"></div>
 <script>
-fetch('breadthdata.csv')
+fetch(`breadthdata.csv?v=${Date.now()}`, { cache: 'no-store' })
     .then(response => response.text())
     .then(csvString => {
         // Normalize newlines, split into rows
